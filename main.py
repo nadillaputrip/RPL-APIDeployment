@@ -14,6 +14,13 @@ app = FastAPI()
 def root():
 	return{'Hello': 'World'}
 
+@app.get('/menu')
+async def get_all_menu():
+	return data
+	raise HTTPException(
+		status_code=404, detail=f'Item not found'
+	)
+
 @app.get('/menu/{item_id}')
 async def read_menu(item_id: int):
 	for menu_item in data['menu']:
