@@ -8,7 +8,7 @@ class UserSchema(BaseModel):
 
     class Config:
         schema_extra = {
-            "user": {
+            "example": {
                 "username": "asdf",
                 "password": "asdf"
             }
@@ -20,7 +20,7 @@ class UserLoginSchema(BaseModel):
 
     class Config:
         schema_extra = {
-            "user": {
+            "example": {
                 "username": "asdf",
                 "password": "asdf"
             }

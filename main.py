@@ -83,7 +83,7 @@ users = [
 
 def check_user(data: UserLoginSchema):
 	for user in users:
-		if user.username == data.username and user.password == data.password:
+		if user["username"] == data.username and user["password"] == data.password:
 			return True
 		return False
 
