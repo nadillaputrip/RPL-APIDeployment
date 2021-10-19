@@ -74,14 +74,18 @@ async def delete_menu(item_id: int):
 				status_code=404, detail=f'Item not found'
 			)
 
-user = {
-    "username": "asdf",
-    "password": "asdf"
-}
+users = [
+	{
+		"username": "asdf",
+		"password": "asdf"
+	}
+]
 
 def check_user(data: UserLoginSchema):
-    if user.username == data.username and user.password == data.password:
-        return True
+	for user in users:
+		if user.username == data.username and user.password == data.password:
+			return True
+		return False
 
 @app.post("/user/login", tags=["user"])
 async def user_login(user: UserLoginSchema = Body(...)):
