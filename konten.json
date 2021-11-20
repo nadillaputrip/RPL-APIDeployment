@@ -1,0 +1,19 @@
+{
+  "konten": [
+    {
+      "idKonten": 1,
+      "judulKonten": "Mental Health Emang Penting?",
+      "deskripsi": "Pentingnya mental health dalam menjalani kehidupan"
+    },
+    {
+      "idKonten": 3,
+      "judulKonten": "Diskriminasi Disabilitas, Masih Zaman?",
+      "deskripsi": "disabilitas"
+    },
+    {
+      "idKonten": 4,
+      "judulKonten": "Fashion Waste? Apa itu?",
+      "deskripsi": "Pengertian fashion waste"
+    }
+  ]
+}

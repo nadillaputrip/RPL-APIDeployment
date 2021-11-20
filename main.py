@@ -1,103 +1,98 @@
 import json
 from fastapi import FastAPI, HTTPException, Body, Depends
 
-from model import UserSchema, UserLoginSchema
+from model import UserLoginSchema
 from auth_bearer import JWTBearer
 from auth_handler import signJWT
 
 from unicodedata import name
-with open("menu.json", "r") as read_file:
+with open("admin.json", "r") as read_file:
+	data_admin = json.load(read_file)
+with open("konten.json", "r") as read_file:
 	data = json.load(read_file)
 app = FastAPI()
 
-@app.get('/')
+@app.get('/', dependencies=[Depends(JWTBearer())], tags=['CRUD Konten'])
 def root():
-	return{'Hello': 'World'}
+	return{'Dashboard Admin Look at Me': 'Konten'}
 
-@app.get('/menu')
-async def get_all_menu():
+@app.get('/konten', dependencies=[Depends(JWTBearer())], tags=['CRUD Konten'])
+async def get_all_konten():
 	return data
 	raise HTTPException(
 		status_code=404, detail=f'Item not found'
 	)
 
-@app.get('/menu/{item_id}')
-async def read_menu(item_id: int):
-	for menu_item in data['menu']:
-		if menu_item['id'] == item_id:
-			return menu_item
+@app.get('/konten/{idkonten}', dependencies=[Depends(JWTBearer())], tags=['CRUD Konten'])
+async def read_konten(idkonten: int):
+	for konten_item in data['konten']:
+		if konten_item['idKonten'] == idkonten:
+			return konten_item
 	raise HTTPException(
-		status_code=404, detail=f'Item not found'
+		status_code=404, detail=f'Konten tidak ditemukan'
 	)
 
-@app.post('/menu')
-async def add_menu(name: str):
+@app.post('/konten', dependencies=[Depends(JWTBearer())], tags=['CRUD Konten'])
+async def add_konten(judul: str, deskripsi: str):
 	id = 1
-	if (len(data['menu']) > 0):
-		id = data['menu'][len(data['menu'])-1]['id']+1
-	new_data = {'id': id, 'name': name}
-	data['menu'].append(dict(new_data))
+	if (len(data['konten']) > 0):
+		id = data['konten'][len(data['konten'])-1]['idKonten']+1
+	new_data = {'idKonten': id, 'judulKonten': judul, 'deskripsi': deskripsi}
+	data['konten'].append(dict(new_data))
 	
 	read_file.close()
-	with open("menu.json", "w") as write_file:
+	with open("konten.json", "w") as write_file:
 		json.dump(data, write_file, indent = 2)
 	write_file.close()
 
 	return(new_data)
 	
 	raise HTTPException(
-		status_code=400, detail=f'Unsuccessful'
+		status_code=400, detail=f'Konten tidak dapat ditambahkan'
 	)
 
-@app.put('/menu/{item_id}')
-async def update_menu(item_id: int, name: str):
-	for menu_item in data['menu']:
-		if menu_item['id'] == item_id:
-			menu_item['name'] = name
+@app.patch('/konten/{idkonten}', dependencies=[Depends(JWTBearer())], tags=['CRUD Konten'])
+async def update_konten(idkonten: int, deskripsi: str):
+	for konten_item in data['konten']:
+		if konten_item['idKonten'] == idkonten:
+			konten_item['deskripsi'] = deskripsi
 			read_file.close()
-			with open("menu.json", "w") as write_file:
+			with open("konten.json", "w") as write_file:
 				json.dump(data, write_file, indent = 2)
 			write_file.close()
 
-			return{"message": "Your update was saved"}
+			return{"Konten berhasil diupdate"}
 			
 			raise  HTTPException(
-				status_code=404, detail=f'Item not found'
+				status_code=404, detail=f'Konten tidak ditemukan'
 			)
 
-@app.delete('/menu/{item_id}')
-async def delete_menu(item_id: int):
-	for menu_item in data['menu']:
-		if menu_item['id'] == item_id:
-			data['menu'].remove(menu_item)
+@app.delete('/konten/{idkonten}', dependencies=[Depends(JWTBearer())], tags=['CRUD Konten'])
+async def delete_konten(idkonten: int):
+	for konten_item in data['konten']:
+		if konten_item['idKonten'] == idkonten:
+			data['konten'].remove(konten_item)
 			read_file.close()
-			with open("menu.json", "w") as write_file:
+			with open("konten.json", "w") as write_file:
 				json.dump(data, write_file, indent = 2)
 			write_file.close()
 
-			return{"message": "Your delete was saved"}
+			return{"Konten berhasil dihapus"}
 			
 			raise  HTTPException(
-				status_code=404, detail=f'Item not found'
+				status_code=404, detail=f'Konten tidak ditemukan'
 			)
-
-users = [
-	{
-		"username": "asdf",
-		"password": "asdf"
-	}
-]
 
 def check_user(data: UserLoginSchema):
-	for user in users:
-		if user["username"] == data.username and user["password"] == data.password:
-			return True
-		return False
+    for user in data_admin['admin']:
+        if user["username"] == data.username and user["password"] == data.password:
+            return True
+    return False
 
-@app.post("/user/login", tags=["user"])
+@app.post("/user/login", tags=["User"])
 async def user_login(user: UserLoginSchema = Body(...)):
     if check_user(user):
         return signJWT(user.username)
     return {
-        "error": "Wrong login details!"
+        "error": "Username atau password salah!"
     }
